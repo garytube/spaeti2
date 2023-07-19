@@ -5,6 +5,12 @@ declare global {
 		// interface Error {}
 		interface Locals {
 			pocketbase: Pocketbase
+			user?: {
+				id: string,
+				name: string,
+				username: string,
+				avatar: string,
+			} | null
 		}
 		// interface PageData {}
 		// interface Platform {}

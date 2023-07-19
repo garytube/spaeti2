@@ -11,6 +11,8 @@ export const handle = (async ({ event, resolve }) => {
   try {
     // get an up-to-date auth store state by verifying and refreshing the loaded auth model (if any)
     event.locals.pocketbase.authStore.isValid && await event.locals.pocketbase.collection('users').authRefresh();
+    const { name, username, id, avatar } = event.locals.pocketbase.authStore.model
+    event.locals.user = { id, name, username, avatar }  // just for simplicity
   } catch (_) {
     // clear the auth store on failed refresh
     event.locals.pocketbase.authStore.clear();
