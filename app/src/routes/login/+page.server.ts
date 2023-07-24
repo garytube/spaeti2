@@ -1,8 +1,5 @@
 import { redirect, type Actions } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import Pocketbase from 'pocketbase'
-import { invalidateAll } from '$app/navigation';
-const pb = new Pocketbase('https')
 
 export const load = (async ({ locals }) => {
   return {
@@ -16,7 +13,7 @@ export const actions: Actions = {
   logout: async ({ locals }) => {
     await locals.pocketbase.authStore.clear()
     locals.user = null
-    redirect(303, '/drinks')
+    throw redirect(303, '/')
   },
   login: async ({ locals, request }) => {
     const data = await request.formData();
@@ -26,6 +23,6 @@ export const actions: Actions = {
     const { record } = await locals.pocketbase.collection('users').authWithPassword(email, password);
     const { name, username, id, avatar } = record
     locals.user = { id, name, username, avatar }  // just for simplicity
-    return
+    throw redirect(303, '/')
   }
 };

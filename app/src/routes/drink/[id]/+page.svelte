@@ -1,15 +1,20 @@
 <script lang="ts">
+	import { enhance } from '$app/forms'
 	import type { PageData } from './$types'
 
 	export let data: PageData
-
 	let { drink } = data
 </script>
 
 <h1>Drink {drink.name}</h1>
 
 <div class="container">
-	<form action="" method="post">
+	<form
+		action=""
+		method="post"
+		use:enhance={() =>
+			async ({ update }) =>
+				await update({ reset: false })}>
 		<label for="stock">Stock</label>
 		<input bind:value={drink.stock} type="number" name="stock" />
 
