@@ -2,16 +2,49 @@
   import { product } from "$lib/store/productStore";
   import { addZero } from "$lib/utils/formatters";
   import { fade, fly } from "svelte/transition";
-
+  import QRCode from "qrcode";
   export let showCart = false;
+
+  let generateQR;
 
   $: totalPrice = $product
     .reduce((acc, curr) => acc + curr.price, 0)
     .toFixed(2);
 
+  $: {
+    console.log("first");
+    QRCode.toDataURL(
+      `https://www.paypal.com/paypalme/GeraldScholz/${totalPrice}`
+    ).then((d) => (generateQR = d));
+  }
+
   function closeCart() {
     showCart = false;
   }
+
+  const randomFact = () => {
+    const colaFakten = [
+      "Cola wurde ursprünglich als Medizin gegen Kopfschmerzen vermarktet.",
+      "Cola enthält winzige Mengen an Koffein, die ursprünglich aus den Blättern des Kokastrauchs stammten.",
+    ];
+
+    const mateFakten = [
+      "Mate-Tee ist das Nationalgetränk in Argentinien und wird traditionell in einer speziellen Kalebasse mit einem Metalltrinkhalm namens Bombilla serviert.",
+      "In Südamerika gilt das Teilen einer Mate-Kalebasse als Zeichen der Freundschaft.",
+    ];
+
+    const bierFakten = [
+      "Bier ist eine der ältesten alkoholischen Getränke der Welt und wird seit mindestens 5.000 Jahren gebraut.",
+      "Es gibt eine Bezeichnung für die Angst vor einem leeren Bierglas - Cenosillicaphobie.",
+      "Die älteste Brauerei der Welt, die Bayerische Staatsbrauerei Weihenstephan, wurde 768 gegründet und braut noch heute Bier.",
+      "Bier enthält B-Vitamine und Mineralstoffe, die dem Körper bei moderatem Konsum zugutekommen können.",
+      "Der weltweit größte Bierkonsum pro Kopf wird in Tschechien verzeichnet, gefolgt von Österreich und Deutschland.",
+    ];
+
+    const all = [...colaFakten, ...mateFakten, ...bierFakten];
+
+    return all[Math.floor(Math.random() * all.length)];
+  };
 </script>
 
 {#if showCart}
@@ -108,12 +141,13 @@
                                 <div
                                   class="flex justify-between text-base font-medium text-gray-900">
                                   <h3>
-                                    <a href="/drink/{drink.id}"
-                                      >#{index} - {drink.name}</a>
+                                    <a href="/drink/{drink.id}">{drink.name}</a>
                                   </h3>
                                   <p class="ml-4">{addZero(drink.price)}</p>
                                 </div>
-                                <p class="mt-1 text-sm text-gray-500">0.5l</p>
+                                <p class="mt-1 text-sm text-gray-500">
+                                  {randomFact()}
+                                </p>
                               </div>
                               <div
                                 class="flex flex-1 items-end justify-between text-sm">
@@ -145,12 +179,21 @@
                     Bezahlt wird mit PayPal
                   </p>
                   <div class="mt-6">
-                    <a
+                    <div
+                      class="flex flex-1 flex-col justify-center items-center">
+                      <img
+                        src={generateQR}
+                        width="200px"
+                        alt="PayPal {totalPrice} €" />
+                      <span class="text-xs -mt-2 text-slate-300"
+                        >https://www.paypal.com/paypalme/GeraldScholz/{totalPrice}</span>
+                    </div>
+                    <!-- <a
                       href="https://www.paypal.com/paypalme/GeraldScholz/{totalPrice}"
                       target="_blank"
                       rel="noopener noreferrer"
                       class="flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-indigo-700"
-                      >PayPal {totalPrice} €</a>
+                      >PayPal {totalPrice} €</a> -->
                   </div>
                   <div
                     class="mt-6 flex justify-center font-body text-center text-xs text-slate-700">
