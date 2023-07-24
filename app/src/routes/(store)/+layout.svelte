@@ -1,26 +1,25 @@
 <script>
-	import Scanner from '$lib/scanner.svelte'
-	export let data
+  import Avatar from "./Avatar.svelte";
+
+  import Scanner from "$lib/components/scanner.svelte";
+  import { goto } from "$app/navigation";
+  import Logo from "$lib/components/Logo.svelte";
+  import ShoppingCart from "$lib/components/ShoppingCart/ShoppingCart.svelte";
+
+  export let data;
 </script>
 
 <Scanner />
-<header class="bg-white shadow-sm h-10 static px-2 flex items-center">
-	<div class="flex-1 flex justify-between items-center">
-		<a href="/" class="font-bold text-purple-900 uppercase text-xs">
-			Mate <span class="text-sky-500">&</span> Freunde
-		</a>
-		{#if data.user?.avatar}
-			<div>
-				<img
-					class="inline-block h-6 w-6 rounded-full"
-					src={`http://127.0.0.1:8090/api/files/users/${data.user.id}/${data.user.avatar}`}
-					alt={data.user.username} />
-			</div>
-		{/if}
-	</div>
+<header class=" flex items-center relative">
+  <Logo class="p-4 lg:max-w-md mt-4 mx-auto" />
+  <ShoppingCart items={0} />
+  <Avatar
+    on:click={() => goto("/login")}
+    user={data.user}
+    class="top-2 absolute right-2 md:right-4 md:top-4" />
 </header>
 <slot />
 <footer
-	class="text-sm text-gray-500 static p-2 flex items-center justify-center mt-auto">
-	<a href="/login">Login</a>
+  class="text-sm text-gray-500 static p-2 flex items-center justify-center mt-auto">
+  <a href="/login">Login</a>
 </footer>
