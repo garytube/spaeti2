@@ -1,8 +1,8 @@
 import { POCKETBASE_URL } from '$env/static/private';
-import type { Handle } from '@sveltejs/kit';
+import { redirect, type Handle } from '@sveltejs/kit';
 import PocketBase from 'pocketbase'
 
-export const handle = (async ({ event, resolve }) => {
+export const handle = (async ({ event, resolve,  }) => {
   event.locals.pocketbase = new PocketBase(POCKETBASE_URL);
 
   // load the store data from the request cookie string
@@ -18,6 +18,10 @@ export const handle = (async ({ event, resolve }) => {
     event.locals.pocketbase.authStore.clear();
   }
 
+  // redirect all request to /admin/* if event.local.user is missing
+  if (!event.locals.user && event.url.pathname.startsWith('/admin')) {
+    throw redirect(303, "/login?redirect="+event.url.pathname)
+  }
   const response = await resolve(event);
 
   // send back the default 'pb_auth' cookie to the client with the latest store state

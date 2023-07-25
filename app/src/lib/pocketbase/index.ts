@@ -1,4 +1,5 @@
 import { product } from '$lib/store/productStore'
+import { v4 as uuidv4 } from 'uuid';
 import type { Drink } from '$lib/types'
 import PocketBase from 'pocketbase'
 import toast from 'svelte-french-toast'
@@ -23,8 +24,10 @@ export async function findProduct(bardcode: string) {
 
   if (drink) {
     // load image
-    drink = { ...drink, cover: pb.getFileUrl(drink, drink.cover) }
+    drink = { ...drink, cover: pb.getFileUrl(drink, drink.cover), uuid: uuidv4() }
   }
 
   return drink
 }
+
+

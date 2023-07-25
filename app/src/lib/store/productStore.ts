@@ -2,6 +2,9 @@ import { findProduct } from "$lib/pocketbase"
 import type { Drink } from "$lib/types"
 import { writable } from "svelte/store"
 
+// status to check if cart is
+export const cartPanelOpen = writable(false)
+
 const createProductStore = () => {
   const { subscribe, set, update } = writable<Drink[]>([])
 
@@ -9,30 +12,14 @@ const createProductStore = () => {
     subscribe,
     set,
     clear: () => set([]),
-    add: (drink: Drink) => update(drinks => [...drinks, drink]),
-    addToCart: (ean: string) =>
-      findProduct(ean).then(drink => {
-        if (drink) {
-          update((drinks) => {
-            if (drinks.length === 0) {
-              return [drink]
-            }
-            return [...drinks, drink]
-          })
-        }
+    addToCart: (barcode: string) =>
+      findProduct(barcode).then(drink => {
+        if (drink) update((drinks) => [drink, ...drinks])
+
       }),
-
-    remove: (index: number) => {
+    remove: (uuid: string) => {
       // remove entry from array by index
-      update(drinks => {
-        if (drinks.length === 0) {
-          return
-        }
-        drinks.splice(index, 1);
-        console.log({ drinks });
-        return drinks
-
-      })
+      update(drinks => drinks.filter(drink => drink.uuid !== uuid))
     }
 
   }

@@ -7,7 +7,7 @@
 
 <slot />
 
-<style>
+<style lang="postcss">
   :global(body) {
     @apply bg-primary;
   }

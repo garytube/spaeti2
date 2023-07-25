@@ -1,50 +1,55 @@
 <script lang="ts">
-  import { product } from "$lib/store/productStore";
+  import { cartPanelOpen, product } from "$lib/store/productStore";
   import { addZero } from "$lib/utils/formatters";
   import { fade, fly } from "svelte/transition";
   import QRCode from "qrcode";
   export let showCart = false;
+  import { tweened } from "svelte/motion";
+  import toast from "svelte-french-toast";
+  import { flip } from "svelte/animate";
+  import type { Drink } from "$lib/types";
+  import { pb } from "$lib/pocketbase";
 
-  let generateQR;
+  let iHavePayedButton: HTMLButtonElement;
+  let generateQR: any;
+
+  const progress = tweened(0, {
+    delay: 0,
+    duration: 3000,
+  });
+
+  const randomFact = async (drink: Drink) => {
+    console.log("drink selected", drink);
+    const result = await pb.collection("facts").getFullList({
+      filter: `type ?= "coke"`,
+      sort: "@random",
+      $autoCancel: false,
+    });
+    console.log(result[0].text);
+    return result[0].text;
+  };
+
+  const hasPayed = () => {
+    product.clear();
+    cartPanelOpen.set(false);
+    toast.success("Danke für deine Zahlung! 🥳", { duration: 5000 });
+  };
 
   $: totalPrice = $product
     .reduce((acc, curr) => acc + curr.price, 0)
     .toFixed(2);
 
+  $: QRCode.toDataURL(
+    `https://www.paypal.com/paypalme/GeraldScholz/${totalPrice}`
+  ).then((d) => (generateQR = d));
+
   $: {
-    console.log("first");
-    QRCode.toDataURL(
-      `https://www.paypal.com/paypalme/GeraldScholz/${totalPrice}`
-    ).then((d) => (generateQR = d));
+    if (showCart) {
+      progress.set(100);
+    } else {
+      progress.set(0, { duration: 0 });
+    }
   }
-
-  function closeCart() {
-    showCart = false;
-  }
-
-  const randomFact = () => {
-    const colaFakten = [
-      "Cola wurde ursprünglich als Medizin gegen Kopfschmerzen vermarktet.",
-      "Cola enthält winzige Mengen an Koffein, die ursprünglich aus den Blättern des Kokastrauchs stammten.",
-    ];
-
-    const mateFakten = [
-      "Mate-Tee ist das Nationalgetränk in Argentinien und wird traditionell in einer speziellen Kalebasse mit einem Metalltrinkhalm namens Bombilla serviert.",
-      "In Südamerika gilt das Teilen einer Mate-Kalebasse als Zeichen der Freundschaft.",
-    ];
-
-    const bierFakten = [
-      "Bier ist eine der ältesten alkoholischen Getränke der Welt und wird seit mindestens 5.000 Jahren gebraut.",
-      "Es gibt eine Bezeichnung für die Angst vor einem leeren Bierglas - Cenosillicaphobie.",
-      "Die älteste Brauerei der Welt, die Bayerische Staatsbrauerei Weihenstephan, wurde 768 gegründet und braut noch heute Bier.",
-      "Bier enthält B-Vitamine und Mineralstoffe, die dem Körper bei moderatem Konsum zugutekommen können.",
-      "Der weltweit größte Bierkonsum pro Kopf wird in Tschechien verzeichnet, gefolgt von Österreich und Deutschland.",
-    ];
-
-    const all = [...colaFakten, ...mateFakten, ...bierFakten];
-
-    return all[Math.floor(Math.random() * all.length)];
-  };
 </script>
 
 {#if showCart}
@@ -57,7 +62,7 @@
     role="dialog"
     aria-modal="true">
     <div
-      on:click={closeCart}
+      on:click={() => cartPanelOpen.set(false)}
       transition:fade={{ duration: 500 }}
       id="slide-over-title"
       class="fixed inset-0 bg-primary-dark backdrop-blur-sm bg-opacity-75 transition-all" />
@@ -75,7 +80,6 @@
                   <h2
                     class="text-xl font-body text-primary"
                     id="slide-over-title">
-                    {$product.length}
                     {#if $product.length == 0}
                       Dein Warenkorb ist leer
                       <small
@@ -88,9 +92,9 @@
                   </h2>
                   <div class="ml-3 flex h-7 items-center">
                     <button
-                      on:click={closeCart}
+                      on:click={() => cartPanelOpen.set(false)}
                       type="button"
-                      class="-m-2 p-2 text-gray-400 hover:text-gray-500">
+                      class="-m-2 p-2 text-gray-600 hover:text-gray-600">
                       <span class="sr-only">Close panel</span>
                       <svg
                         class="h-6 w-6"
@@ -123,9 +127,10 @@
                     {:else}
                       <ul
                         role="list"
-                        class="-my-6 divide-y divide-gray-200 overflow-x-hidden">
-                        {#each $product as drink, index (index)}
+                        class="-my-6 divide-y divide-gray-200 overflow-hidden">
+                        {#each $product as drink, i (drink.uuid)}
                           <li
+                            animate:flip={{ duration: 200 }}
                             transition:fly={{ x: "100%", duration: 500 }}
                             class="flex py-6">
                             <div
@@ -145,17 +150,25 @@
                                   </h3>
                                   <p class="ml-4">{addZero(drink.price)}</p>
                                 </div>
-                                <p class="mt-1 text-sm text-gray-500">
-                                  {randomFact()}
-                                </p>
+                                {#await randomFact(drink) then fact}
+                                  <p class="mt-1 text-sm text-gray-500">
+                                    {fact}
+                                  </p>
+                                {/await}
                               </div>
                               <div
                                 class="flex flex-1 items-end justify-between text-sm">
-                                <button
-                                  on:click={() => product.remove(index)}
-                                  type="button"
-                                  class="font-medium ml-auto opacity-20 hover:opacity-100 hover:text-indigo-600 h"
-                                  >Entfernen</button>
+                                {#if drink.uuid}
+                                  <!-- Die UUID wird gesetzt wenn das Produkt gescannt wird. 
+                                  Da passier im Store Die UUID ist nicht in der Datenbank gespeichert, sondern wird nur im Store gespeichert.
+                                  In der Carousel Übersicht fehlt die UUID noch-->
+                                  <button
+                                    on:click={() => product.remove(drink.uuid)}
+                                    type="button"
+                                    class="font-medium ml-auto opacity-60 hover:opacity-100 hover:text-indigo-600 h">
+                                    Entfernen
+                                  </button>
+                                {/if}
                               </div>
                             </div>
                           </li>
@@ -178,30 +191,47 @@
                   <p class="mt-0.5 text-sm text-gray-500">
                     Bezahlt wird mit PayPal
                   </p>
-                  <div class="mt-6">
+                  <div class="">
                     <div
                       class="flex flex-1 flex-col justify-center items-center">
                       <img
                         src={generateQR}
                         width="200px"
                         alt="PayPal {totalPrice} €" />
-                      <span class="text-xs -mt-2 text-slate-300"
-                        >https://www.paypal.com/paypalme/GeraldScholz/{totalPrice}</span>
+
+                      <button
+                        class="-mt-1 relative flex items-center justify-center transition-all duration-300 bg-primary disabled:bg-slate-200 disabled:text-slate-300 text-white px-4 py-2 rounded-lg font-body text-sm"
+                        disabled={$progress !== 100}
+                        bind:this={iHavePayedButton}
+                        on:click={hasPayed}>
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke-width="1.5"
+                          stroke="currentColor"
+                          class="w-6 h-6 mr-1">
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z" />
+                        </svg>
+                        Ich hab bezahlt
+                        {#if $progress !== 100}
+                          <progress
+                            out:fade
+                            class="absolute bottom-1 h-[2px] left-0 right-0 mx-auto w-10/12"
+                            max="100"
+                            value={$progress} />
+                        {/if}
+                      </button>
                     </div>
-                    <!-- <a
-                      href="https://www.paypal.com/paypalme/GeraldScholz/{totalPrice}"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      class="flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-indigo-700"
-                      >PayPal {totalPrice} €</a> -->
                   </div>
                   <div
-                    class="mt-6 flex justify-center font-body text-center text-xs text-slate-700">
+                    class="mt-2 flex justify-center font-body text-center text-xs text-slate-700">
                     <p>
-                      Die Getränke werden
-                      <span class="font-body text-primary">PRIVAT</span>
-                      finanziert. <br />
-                      Direkt bezahlen. Pfand zurück bringen.
+                      Scann den QR Code und bezahle mit PayPal.<br />Sobald du
+                      fertig bist, drück den Button.
                     </p>
                   </div>
                 </div>
@@ -213,3 +243,11 @@
     </div>
   </div>
 {/if}
+
+<style>
+  progress:not([value]) {
+    background-color: #eee;
+    border-radius: 2px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.25) inset;
+  }
+</style>

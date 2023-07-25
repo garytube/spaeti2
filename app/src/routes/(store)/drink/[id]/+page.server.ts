@@ -1,5 +1,5 @@
 import { redirect, type Actions, fail } from '@sveltejs/kit';
-import type { Drink } from '../../../lib/types';
+import type { Drink } from '$lib/types';
 import type { PageServerLoad } from './$types';
 
 export const load = (async ({ locals, params }) => {

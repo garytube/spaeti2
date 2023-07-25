@@ -12,7 +12,7 @@
 <Scanner />
 <header class=" flex items-center relative">
   <Logo class="p-4 lg:max-w-md mt-4 mx-auto" />
-  <ShoppingCart items={0} />
+  <ShoppingCart />
   <Avatar
     on:click={() => goto("/login")}
     user={data.user}

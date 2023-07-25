@@ -3,7 +3,7 @@
 
 <svg
   id="logo"
-  class={$$props.class}
+  class="max-h-[400px] -mt-3 {$$props.class}"
   xmlns="http://www.w3.org/2000/svg"
   viewBox="0 0 1125 787">
   <g

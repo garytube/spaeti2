@@ -1,23 +1,18 @@
 <script>
   import CartPanel from "./CartPanel.svelte";
-  import { product } from "$lib/store/productStore";
-
-  $: showCart = false;
-
-  function openCart() {
-    showCart = true;
-  }
+  import { cartPanelOpen, product } from "$lib/store/productStore";
 
   $: if ($product.length !== 0) {
     console.log("product", $product);
-    openCart();
+    cartPanelOpen.set(true);
   }
 </script>
 
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <!-- svelte-ignore a11y-click-events-have-key-events -->
+
 <div
-  on:click={openCart}
+  on:click={() => cartPanelOpen.set(true)}
   class="rounded-full bg-primary-dark bg-opacity-30 hover:bg-opacity-80 duration-150 p-2 cursor-pointer fixed top-2 left-2">
   {#if $product.length > 0}
     <div
@@ -40,10 +35,10 @@
   </svg>
 </div>
 
-<CartPanel bind:showCart />
+<CartPanel showCart={$cartPanelOpen} />
 
 <style>
   .inactive {
-    opacity: 0.54029764001906D;
+    opacity: 0.6;
   }
 </style>
