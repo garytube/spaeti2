@@ -14,7 +14,7 @@ export const drinkSchema = z.object({
   stock: z.number(),
   fact_type: z.string().optional(),
   updated: z.string(),
-  uuid: z.string()
+  uuid: z.string().default('a'),
 })
 export const factSchema = z.object({
   active: z.boolean(),

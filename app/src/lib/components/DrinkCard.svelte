@@ -1,4 +1,7 @@
 <script lang="ts">
+  import { dev } from "$app/environment";
+  import { product } from "$lib/store/productStore";
+
   import type { Drink } from "$lib/types";
   import { addZero } from "$lib/utils/formatters";
   import toast from "svelte-french-toast";
@@ -17,6 +20,11 @@
     class="h-[400px] mt-12 mb-1 object-contain animate-wiggle" />
   <div class="font-bold text-primary-dark text-3xl">{drink.name}</div>
   <div class="font-bold text-primary text-4xl">{price}</div>
+  {#if dev}
+    <button on:click={() => product.addToCart(drink.barcode)} class="paypal">
+      DEBUG +ADD
+    </button>
+  {/if}
   <button
     on:click={() =>
       toast.success("📸 Scanne ➡️ am Kühlschrank!", {

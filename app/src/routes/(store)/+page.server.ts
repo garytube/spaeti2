@@ -1,18 +1,25 @@
-import type { Drink } from '../../lib/types';
+import { error } from '@sveltejs/kit';
+import { drinkSchema } from '../../lib/types';
 import type { PageServerLoad } from './$types';
 
+
 export const load = (async ({ locals }) => {
-  const drinks = await locals.pocketbase
-    .collection<Drinks[]>('drinks')
-    .getFullList({ sort: '-created', filter: 'active = true' })
+  try {
+    const data = await locals.pocketbase
+      .collection('drinks')
+      .getFullList({ sort: '-created', filter: 'active = true' })
 
-  if (drinks) {
-    console.log(drinks)
-    // load image
-    drinks.forEach((drink, index) => {
-      drinks[index].cover = locals.pocketbase.getFileUrl(drink, drink.cover)
-    })
+    const drinks = drinkSchema.array().parse(data);
+
+    if (drinks) {
+      drinks.forEach((drink, index) => {
+        drinks[index].cover = locals.pocketbase.getFileUrl(drink, drink.cover)
+      })
+    }
+
+    return { drinks };
+  } catch (e) {
+    console.error(e);
+    throw error(500, 'Datenbank offline');
   }
-
-  return { drinks };
 }) satisfies PageServerLoad;

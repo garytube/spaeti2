@@ -9,6 +9,7 @@
   import { flip } from "svelte/animate";
   import type { Drink } from "$lib/types";
   import { pb } from "$lib/pocketbase";
+  import AutomaticReset from "../AutomaticReset.svelte";
 
   let iHavePayedButton: HTMLButtonElement;
   let generateQR: any;
@@ -66,6 +67,8 @@
       transition:fade={{ duration: 500 }}
       id="slide-over-title"
       class="fixed inset-0 bg-primary-dark backdrop-blur-sm bg-opacity-75 transition-all" />
+
+    <AutomaticReset timeout={60} />
 
     <div class="fixed inset-0 max-w-max overflow-hidden">
       <div class="absolute inset-0 overflow-hidden">
@@ -166,7 +169,7 @@
                                     on:click={() => product.remove(drink.uuid)}
                                     type="button"
                                     class="font-medium ml-auto opacity-60 hover:opacity-100 hover:text-indigo-600 h">
-                                    Entfernen
+                                    Entfernen {drink.uuid}
                                   </button>
                                 {/if}
                               </div>
@@ -200,7 +203,7 @@
                         alt="PayPal {totalPrice} €" />
 
                       <button
-                        class="-mt-1 relative flex items-center justify-center transition-all duration-300 bg-primary disabled:bg-slate-200 disabled:text-slate-300 text-white px-4 py-2 rounded-lg font-body text-sm"
+                        class="-mt-1 relative flex items-center justify-center transition-all duration-300 bg-green-500 disabled:bg-slate-200 disabled:text-slate-300 text-white px-4 py-2 rounded-lg font-body text-sm"
                         disabled={$progress !== 100}
                         bind:this={iHavePayedButton}
                         on:click={hasPayed}>

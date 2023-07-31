@@ -25,6 +25,7 @@ const config = {
           DEFAULT: '#6351e5',
           dark: '#2e3d7f'
         },
+        neongruen: '#17fbb6',
         jelb: "#e8d046",
         kupfer: "#23c392",
 
