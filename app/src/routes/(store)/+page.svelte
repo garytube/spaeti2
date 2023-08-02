@@ -32,7 +32,7 @@
 </script>
 
 <ul class="product_list">
-	<Carousel perPage={1} autoplay={50000} dots={false}>
+	<Carousel perPage={1} autoplay={10000} dots={false}>
 		{#each drinks.filter(d => d.active) as drink (drink.id)}
 			<DrinkCard {drink} />
 		{/each}
