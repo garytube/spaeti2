@@ -4,6 +4,7 @@
 	import { pb } from '$lib/pocketbase'
 	import Carousel from '$lib/components/Carousel.svelte'
 	import DrinkCard from '$lib/components/DrinkCard.svelte'
+	import { PUBLIC_AUTOPLAY } from '$env/static/public'
 
 	export let data
 
@@ -32,7 +33,7 @@
 </script>
 
 <ul class="product_list">
-	<Carousel perPage={1} autoplay={10000} dots={false}>
+	<Carousel perPage={1} autoplay={PUBLIC_AUTOPLAY} dots={false}>
 		{#each drinks.filter(d => d.active) as drink (drink.id)}
 			<DrinkCard {drink} />
 		{/each}
