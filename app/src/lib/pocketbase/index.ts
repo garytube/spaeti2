@@ -1,11 +1,9 @@
-import { product } from '$lib/store/productStore'
 import { v4 as uuidv4 } from 'uuid';
 import type { Drink } from '$lib/types'
-import PocketBase from 'pocketbase'
 import toast from 'svelte-french-toast'
+import Pocketbase from 'pocketbase'
 
-export const pb = new PocketBase('http://localhost:8090')
-
+export const pb = new Pocketbase(import.meta.env.VITE_PB_URL)
 
 export async function findProduct(bardcode: string) {
   console.log("Searching DB for EAN: " + bardcode)

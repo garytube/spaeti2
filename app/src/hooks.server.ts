@@ -1,10 +1,10 @@
-import { POCKETBASE_URL } from '$env/static/private';
 import { redirect, type Handle } from '@sveltejs/kit';
-import PocketBase from 'pocketbase'
 
-export const handle = (async ({ event, resolve,  }) => {
-  event.locals.pocketbase = new PocketBase(POCKETBASE_URL);
+import Pocketbase from 'pocketbase'
 
+
+export const handle = (async ({ event, resolve, }) => {
+  event.locals.pocketbase = new Pocketbase(import.meta.env.VITE_PB_URL)
   // load the store data from the request cookie string
   event.locals.pocketbase.authStore.loadFromCookie(event.request.headers.get('cookie') || '');
 
@@ -20,7 +20,7 @@ export const handle = (async ({ event, resolve,  }) => {
 
   // redirect all request to /admin/* if event.local.user is missing
   if (!event.locals.user && event.url.pathname.startsWith('/admin')) {
-    throw redirect(303, "/login?redirect="+event.url.pathname)
+    throw redirect(303, "/login?redirect=" + event.url.pathname)
   }
   const response = await resolve(event);
 
