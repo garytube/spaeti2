@@ -1,0 +1,27 @@
+version: "3.9"
+
+services:
+  pocketbase:
+    container_name: pocketbase
+    build: .
+    restart: unless-stopped
+    # ports:
+    #   - 8090:8090
+    networks:
+      - spaeti
+    volumes:
+      - ./pocketbase/pb_data:/pb/pb_data
+
+  tunnel:
+    container_name: cloudflared-tunnel
+    image: cloudflare/cloudflared
+    restart: unless-stopped
+    command: tunnel run
+    networks:
+      - spaeti
+    environment:
+      - TUNNEL_TOKEN=eyJhIjoiM2Q5NzUwOWU0NjQxNmY1MDFiYjI4NmZkYTBlMDYwYWIiLCJ0IjoiMzQ5N2QzMWUtYTllZC00Nzg3LWJhMTktNTUxZjVkYzAwNmRkIiwicyI6IllUQmpZVEU1TUdVdE9XUTFNUzAwWlRneUxXRXpPR010T1RKaFl6ZzNOelZoTXpoaCJ9
+
+networks:
+  spaeti:
+    name: pocket

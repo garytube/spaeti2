@@ -1,10 +1,10 @@
+import { BACKEND } from '$lib/pocketbase';
 import { redirect, type Handle } from '@sveltejs/kit';
-
 import Pocketbase from 'pocketbase'
 
 
 export const handle = (async ({ event, resolve, }) => {
-  event.locals.pocketbase = new Pocketbase(import.meta.env.VITE_PB_URL)
+  event.locals.pocketbase = new Pocketbase(BACKEND);
   // load the store data from the request cookie string
   event.locals.pocketbase.authStore.loadFromCookie(event.request.headers.get('cookie') || '');
 

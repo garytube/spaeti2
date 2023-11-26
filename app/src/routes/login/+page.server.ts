@@ -1,4 +1,4 @@
-import { redirect, type Actions, error, fail } from '@sveltejs/kit';
+import { redirect, type Actions, fail } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 
 export const load = (async ({ locals }) => {
