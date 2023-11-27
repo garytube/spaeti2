@@ -129,50 +129,51 @@
                         loop
                         autoplay />
                     {:else}
-                      <ul
-                        role="list"
-                        class="-my-6 divide-y divide-gray-200 overflow-hidden">
+                      <ul role="list" class="-my-6 divide-y divide-gray-200">
                         {#each $product as drink, i (drink.uuid)}
                           <li
                             animate:flip={{ duration: 200 }}
                             transition:fly={{ x: "100%", duration: 500 }}
-                            class="flex py-6">
+                            class="flex py-6 relative">
                             <div
-                              class="h-24 w-24 flex-shrink-0 overflow-hidden">
+                              class="h-24 w-12 mr-8 flex-shrink-0 overflow-hidden">
                               <img
                                 src={drink.cover}
                                 alt="Salmon orange fabric pouch with match zipper, gray zipper pull, and adjustable hip belt."
                                 class="h-full w-full object-contain" />
                             </div>
 
-                            <div class="ml-4 flex flex-1 flex-col">
-                              <div>
-                                <div
-                                  class="flex justify-between text-base font-medium text-gray-900">
-                                  <h3>
-                                    <a href="/drink/{drink.id}">{drink.name}</a>
-                                  </h3>
-                                  <p class="ml-4">{addZero(drink.price)}</p>
-                                </div>
-                                {#await randomFact(drink) then fact}
-                                  <p class="mt-1 text-sm text-gray-500">
-                                    {fact}
-                                  </p>
-                                {/await}
-                              </div>
+                            <div class="flex flex-1 flex-col h-full">
                               <div
-                                class="flex flex-1 items-end justify-between text-sm">
-                                {#if drink.uuid}
-                                  <!-- Die UUID wird gesetzt wenn das Produkt gescannt wird. 
+                                class="flex justify-between text-base font-medium text-gray-900">
+                                <h3 class="text-xl">
+                                  <a href="/drink/{drink.id}">{drink.name}</a>
+                                  {#await randomFact(drink) then fact}
+                                    <p
+                                      class="text-[16px] font-normal text-gray-500">
+                                      {fact}
+                                    </p>
+                                  {/await}
+                                </h3>
+                                <p
+                                  class="ml-4 self-center text-slate-900 bg-gray-100 rounded-lg px-2 py-1 text-lg relative">
+                                  {#if drink.uuid}
+                                    <div
+                                      class="absolute -top-1 -right-1 text-sm">
+                                      <!-- Die UUID wird gesetzt wenn das Produkt gescannt wird. 
                                   Da passier im Store Die UUID ist nicht in der Datenbank gespeichert, sondern wird nur im Store gespeichert.
                                   In der Carousel Übersicht fehlt die UUID noch-->
-                                  <button
-                                    on:click={() => product.remove(drink.uuid)}
-                                    type="button"
-                                    class="font-medium ml-auto opacity-60 hover:opacity-100 hover:text-indigo-600 h">
-                                    Entfernen
-                                  </button>
-                                {/if}
+                                      <button
+                                        on:click={() =>
+                                          product.remove(drink.uuid)}
+                                        type="button"
+                                        class="font-bold text-white bg-purple-900 ring-2 ring-white text-[6px] justify-center w-3 h-3 rounded-full flex items-center">
+                                        X
+                                      </button>
+                                    </div>
+                                  {/if}
+                                  {addZero(drink.price)}
+                                </p>
                               </div>
                             </div>
                           </li>
@@ -192,45 +193,46 @@
                     <p>Zu zahlender Betrag</p>
                     <p>{totalPrice} €</p>
                   </div>
-                  <p class="mt-0.5 text-sm text-gray-500">
-                    Bezahlt wird mit PayPal
+                  <p class="mt-0.5 mb-4 text-sm text-gray-500">
+                    via PayPal als Freunde & Familie
                   </p>
-                  <div class="">
-                    <div
-                      class="flex flex-1 flex-col justify-center items-center">
-                      <button
-                        class="-mt-1 relative flex items-center justify-center transition-all duration-300 bg-green-500 disabled:bg-slate-200 disabled:text-slate-300 text-white px-4 py-2 rounded-lg font-body text-sm"
-                        disabled={$progress !== 100}
-                        bind:this={iHavePayedButton}
-                        on:click={hasPayed}>
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke-width="1.5"
-                          stroke="currentColor"
-                          class="w-6 h-6 mr-1">
-                          <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z" />
-                        </svg>
-                        Ich hab bezahlt
-                        {#if $progress !== 100}
-                          <progress
-                            out:fade
-                            class="absolute bottom-1 h-[2px] left-0 right-0 mx-auto w-10/12"
-                            max="100"
-                            value={$progress} />
-                        {/if}
-                      </button>
-                    </div>
+                  <img
+                    class="block mb-2 w-5/12 mx-auto"
+                    src="/p.jpg"
+                    alt="paypal @geraldscholz" />
+                  <div class="flex flex-1 flex-col justify-center items-center">
+                    <button
+                      class="-mt-1 relative flex items-center justify-center transition-all duration-300 bg-green-500 disabled:bg-slate-200 disabled:text-slate-300 text-white px-4 py-2 rounded-lg font-body text-sm"
+                      disabled={$progress !== 100}
+                      bind:this={iHavePayedButton}
+                      on:click={hasPayed}>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke-width="1.5"
+                        stroke="currentColor"
+                        class="w-6 h-6 mr-1">
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z" />
+                      </svg>
+                      Ich hab bezahlt
+                      {#if $progress !== 100}
+                        <progress
+                          out:fade
+                          class="absolute bottom-1 h-[2px] left-0 right-0 mx-auto w-10/12"
+                          max="100"
+                          value={$progress} />
+                      {/if}
+                    </button>
                   </div>
                   <div
-                    class="mt-2 flex justify-center font-body text-center text-xs text-slate-700">
+                    class=" flex justify-center font-body text-center text-xs text-slate-700">
                     <p>
-                      Scann den QR Code und bezahle mit PayPal.<br />Sobald du
-                      fertig bist, drück den Button.
+                      Mein Paypal lautet @GeraldScholz<br />Sobald du fertig
+                      bist, drück den Button.
                     </p>
                   </div>
                 </div>

@@ -2,9 +2,8 @@ import { v4 as uuidv4 } from 'uuid';
 import type { Drink } from '$lib/types'
 import toast from 'svelte-french-toast'
 import Pocketbase from 'pocketbase'
-import { dev } from '$app/environment';
 
-export const BACKEND = dev ? 'http://localhost:8090' : import.meta.env.VITE_PB_URL
+export const BACKEND = import.meta.env.VITE_PB_URL
 
 export const pb = new Pocketbase(BACKEND)
 
