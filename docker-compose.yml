@@ -1,6 +1,16 @@
 version: "3.9"
 
 services:
+  frontend:
+    container_name: spaeti
+    build: ./frontend
+    restart: unless-stopped
+    ports:
+      - 3000:3000
+    networks:
+      - spaeti
+
+
   pocketbase:
     container_name: pocketbase
     build: ./pocketbase
