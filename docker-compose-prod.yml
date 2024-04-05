@@ -1,0 +1,11 @@
+version: '3.8'
+services:
+  pocketbase:
+    image: ghcr.io/garytube/spaeti3:latest
+    container_name: spaeti-kiosk
+    restart: unless-stopped
+    ports:
+      - '8090:8090'
+    volumes:
+      - ./backend/pb_data:/pb/pb_data
+      - ./backend/pb_migrations:/pb/pb_migrations

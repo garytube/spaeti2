@@ -1,0 +1,20 @@
+version: '3.8'
+services:
+  pocketbase:
+    image: ghcr.io/garytube/spaeti3:latest
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    container_name: pocketbase-dev
+    develop:
+      watch:
+        - action: sync
+          path: ./dist
+          target: /pb/pb_public
+        - action: rebuild
+          path: package.json
+    ports:
+      - '8090:8090'
+    volumes:
+      - ./backend/pb_data:/pb/pb_data
+      - ./backend/pb_migrations:/pb/pb_migrations
