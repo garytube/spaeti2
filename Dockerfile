@@ -5,7 +5,7 @@ FROM oven/bun AS sveltekit-builder
 WORKDIR /app
 
 # Copy all the application files to the container
-COPY . .
+COPY ./frontend .
 
 # Install dependencies and build the app
 RUN bun install
@@ -32,7 +32,7 @@ FROM alpine:latest
 LABEL maintainer="g@geryy.dev"
 LABEL version="1.0"
 LABEL description="A Speati made with SvelteKit and PocketBase"
-LABEL org.opencontainers.image.source https://github.com/garytube/spaeti3
+LABEL org.opencontainers.image.source https://github.com/garytube/spaeti2
 LABEL org.opencontainers.image.description "A Speati made with SvelteKit and PocketBase"
 
 # Copy the PocketBase binary from the pocketbase-prep stage
