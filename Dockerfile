@@ -41,6 +41,8 @@ COPY --from=pocketbase-prep /pb/pocketbase /pb/pocketbase
 # Copy the built SvelteKit app from the sveltekit-builder stage
 COPY --from=sveltekit-builder /app/dist /pb/pb_public
 
+COPY ./backend/pb_migrations /pb/pb_migrations
+
 EXPOSE 8090
 
 CMD ["/pb/pocketbase", "serve", "--dev", "--http=0.0.0.0:8090"]
