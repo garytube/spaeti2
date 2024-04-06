@@ -14,7 +14,7 @@ RUN bun run build
 # Stage 2: Download and prepare PocketBase
 FROM alpine:latest AS pocketbase-prep
 
-ARG PB_VERSION=0.22.4
+ARG PB_VERSION=0.22.8
 
 # Install required packages
 RUN apk add --no-cache \
@@ -42,6 +42,7 @@ COPY --from=pocketbase-prep /pb/pocketbase /pb/pocketbase
 COPY --from=sveltekit-builder /app/dist /pb/pb_public
 
 COPY ./backend/pb_migrations /pb/pb_migrations
+COPY ./backend/pb_hooks /pb/pb_hooks
 
 EXPOSE 8090
 
