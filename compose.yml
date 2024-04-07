@@ -4,7 +4,7 @@ services:
     image: ghcr.io/garytube/spaeti3:latest
     build:
       context: .
-      dockerfile: frontend/Dockerfile
+      dockerfile: ./Dockerfile
     container_name: pocketbase-dev
     develop:
       watch:
@@ -12,7 +12,7 @@ services:
           path: ./dist
           target: /pb/pb_public
         - action: rebuild
-          path: package.json
+          path: .frontend/package.json
     ports:
       - '8090:8090'
     volumes:
