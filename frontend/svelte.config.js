@@ -4,16 +4,18 @@ import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
-	preprocess: vitePreprocess(),
-
 	kit: {
+		alias: {
+			'@db': './src/db'
+		},
 		adapter: adapter({
 			fallback: 'index.html',
 			pages: 'dist',
 			assets: 'dist',
 			strict: true
 		})
-	}
+	},
+	preprocess: vitePreprocess({})
 };
 
 export default config;

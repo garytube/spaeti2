@@ -1,13 +1,7 @@
 <script lang="ts">
-	let { width = '400px' } = $props();
 </script>
 
-<svg
-	id="logo"
-	class="max-h-[{width}] -mt-3"
-	xmlns="http://www.w3.org/2000/svg"
-	viewBox="0 0 1125 787"
->
+<svg id="logo" class="-ml-8 w-[240px]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1125 787">
 	<g
 		><polygon
 			class="cls-11 animate-wiggle origin-center"
@@ -266,7 +260,6 @@
 	.cls-4,
 	.cls-5,
 	.cls-8 {
-		@apply stroke-primary-dark;
 		stroke-width: 2.85px;
 	}
 	.text-color {
@@ -276,19 +269,18 @@
 
 	.cls-10 {
 		transition: all 0.6s ease;
-		fill: #17fbb6;
+		fill: #fb5017;
 	}
 
 	.cls-11 {
-		fill: #2e3d7f;
+		fill: rgb(1, 22, 123);
 	}
 	.cls-6 {
-		@apply stroke-primary;
 		stroke-width: 4px;
 	}
 
 	.cls-12 {
-		fill: #fee13f;
+		fill: rgb(234 179 8);
 		transition: all 1s ease;
 	}
 	.cls-7 {
@@ -299,7 +291,7 @@
 		stroke-width: 1.15px;
 	}
 	.cls-13 {
-		fill: #6351e5;
+		fill: #3922ea;
 	}
 
 	#logo:hover .cls-10 {
