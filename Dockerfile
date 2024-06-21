@@ -14,7 +14,7 @@ RUN bun run build
 # Stage 2: Download and prepare PocketBase
 FROM alpine:latest AS pocketbase-prep
 
-ARG PB_VERSION=0.22.8
+ARG PB_VERSION=0.22.14
 
 # Install required packages
 RUN apk add --no-cache \
