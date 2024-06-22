@@ -22,7 +22,7 @@ RUN apk add --no-cache \
   ca-certificates
 
 # Download and unzip PocketBase
-ADD https://github.com/pocketbase/pocketbase/releases/download/v${PB_VERSION}/pocketbase_${PB_VERSION}_linux_amd64.zip /tmp/pb.zip
+ADD https://github.com/pocketbase/pocketbase/releases/download/v${PB_VERSION}/pocketbase_${PB_VERSION}_linux_arm64.zip /tmp/pb.zip
 RUN unzip /tmp/pb.zip -d /pb
 
 # Final stage: Assemble the SvelteKit static files and PocketBase into a single image
