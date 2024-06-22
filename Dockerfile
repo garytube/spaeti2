@@ -14,16 +14,21 @@ RUN bun run build
 # Stage 2: Download and prepare PocketBase
 FROM alpine:latest AS pocketbase-prep
 
-ARG PB_VERSION=0.22.14
+ARG TARGETOS
+ARG TARGETARCH
+ARG TARGETVARIANT
+ARG VERSION=0.22.14
 
+ENV BUILDX_ARCH="${TARGETOS:-linux}_${TARGETARCH:-amd64}${TARGETVARIANT}"
 # Install required packages
 RUN apk add --no-cache \
   unzip \
   ca-certificates
 
 # Download and unzip PocketBase
-ADD https://github.com/pocketbase/pocketbase/releases/download/v${PB_VERSION}/pocketbase_${PB_VERSION}_linux_arm64.zip /tmp/pb.zip
-RUN unzip /tmp/pb.zip -d /pb
+RUN wget https://github.com/pocketbase/pocketbase/releases/download/v${VERSION}/pocketbase_${VERSION}_${BUILDX_ARCH}.zip \
+  && unzip pocketbase_${VERSION}_${BUILDX_ARCH}.zip -d /pb \
+  && chmod +x /pb
 
 # Final stage: Assemble the SvelteKit static files and PocketBase into a single image
 FROM alpine:latest
