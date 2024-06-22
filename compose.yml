@@ -1,7 +1,7 @@
 version: '3.8'
 services:
   pocketbase:
-    image: ghcr.io/garytube/spaeti3:latest
+    image: ghcr.io/garytube/spaeti2:latest
     build:
       context: .
       dockerfile: ./Dockerfile
